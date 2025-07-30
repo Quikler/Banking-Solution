@@ -34,6 +34,15 @@ public class AccountManagement(UserManager<UserEntity> userManager, TokenProvide
             Email = email,
         };
 
+        // Initial balance
+        var balance = new BalanceEntity
+        {
+            User = user,
+            Balance = 0m,
+        };
+
+        user.Balance = balance;
+
         var createResult = await userManager.CreateAsync(user, password);
         return createResult.Succeeded ? await GenerateAuthDtoForUserAsync(user) : FailureDto.BadRequest(createResult.Errors.Select(e => e.Description));
     }
