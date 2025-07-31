@@ -2,6 +2,7 @@
 using Common;
 using Common.DTOs;
 using DAL.Entities;
+using Mappers.Mapping;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +12,10 @@ public class AccountManagement(UserManager<UserEntity> userManager, TokenProvide
 {
     public async Task<Result<AuthSuccessDto, FailureDto>> LoginAsync(string email, string password)
     {
-        var user = await userManager.FindByEmailAsync(email);
+        var user = await userManager.Users
+            .Include(u => u.Balance) // Include to retrieve Balance (maybe better add Lazy loading later)
+            .FirstOrDefaultAsync(u => u.Email == email);
+
         if (user is null)
         {
             return FailureDto.Unauthorized("Invalida email or password");
@@ -56,10 +60,6 @@ public class AccountManagement(UserManager<UserEntity> userManager, TokenProvide
     private static AuthSuccessDto CreateAuthDto(UserEntity user, string token) => new()
     {
         Token = token,
-        User = new UserDto
-        {
-            Id = user.Id,
-            Email = user.Email,
-        },
+        User = user.ToDto(),
     };
 }
