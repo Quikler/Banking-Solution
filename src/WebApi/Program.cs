@@ -115,6 +115,8 @@ var app = builder.Build();
 
 app.MapControllers();
 
+app.UseStaticFiles();
+
 using (var scope = app.Services.CreateScope())
 {
     var serviceProvider = scope.ServiceProvider;
