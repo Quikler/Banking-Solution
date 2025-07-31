@@ -18,7 +18,7 @@ public class AccountManagement(UserManager<UserEntity> userManager, TokenProvide
 
         if (user is null)
         {
-            return FailureDto.Unauthorized("Invalida email or password");
+            return FailureDto.Unauthorized("Invalid email or password");
         }
 
         var isCorrectPassword = await userManager.CheckPasswordAsync(user, password);
@@ -34,6 +34,7 @@ public class AccountManagement(UserManager<UserEntity> userManager, TokenProvide
 
         var user = new UserEntity
         {
+            Id = Guid.NewGuid(),
             UserName = email,
             Email = email,
         };
@@ -41,6 +42,7 @@ public class AccountManagement(UserManager<UserEntity> userManager, TokenProvide
         // Initial balance
         var balance = new BalanceEntity
         {
+            UserId = user.Id,
             User = user,
             Balance = 0m,
         };

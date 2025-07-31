@@ -19,6 +19,7 @@ public static class DomainToDto
     {
         return new BalanceDto
         {
+            Id = entity.Id,
             UserId = entity.UserId,
             Balance = entity.Balance,
         };
