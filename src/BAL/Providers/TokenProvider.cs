@@ -17,6 +17,7 @@ public class TokenProvider(IOptions<JwtConfiguration> jwtConfiguration)
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Sub, user.UserName!),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email!),
         ];
 
         // Add roles to JWT token
