@@ -1,7 +1,7 @@
 ﻿using Common;
 using Common.DTOs;
+using Mappers.Mapping;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Mapping;
 
 namespace WebApi.Extensions;
 

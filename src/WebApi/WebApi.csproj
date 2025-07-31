@@ -23,6 +23,7 @@
     <ProjectReference Include="..\DAL\DAL.csproj" />
     <ProjectReference Include="..\BAL\BAL.csproj" />
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
+    <ProjectReference Include="..\Mappers\Mappers.csproj" />
   </ItemGroup>
 
 </Project>

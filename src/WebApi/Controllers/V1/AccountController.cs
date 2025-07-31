@@ -3,9 +3,9 @@ using Contracts;
 using Contracts.V1.Requests.Account;
 using Contracts.V1.Responses;
 using Contracts.V1.Responses.Account;
+using Mappers.Mapping;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Extensions;
-using WebApi.Mapping;
 
 namespace WebApi.Controllers.V1;
 
