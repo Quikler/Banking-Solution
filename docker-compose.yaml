@@ -1,0 +1,24 @@
+services:
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "5039:5039"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5039
+    depends_on:
+      - api.postgres
+
+  api.postgres:
+    image: postgres:16.9-alpine
+    container_name: api.postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "root"
+      POSTGRES_DB: "banking_solution"
