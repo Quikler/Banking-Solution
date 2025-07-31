@@ -5,7 +5,16 @@ namespace Mappers.Mapping;
 
 public static class DomainToDto
 {
-    public static UserDto ToDto(this UserEntity entity)
+    public static UserAccountDto ToUserAccountDto(this UserEntity entity)
+    {
+        return new UserAccountDto
+        {
+            Id = entity.Id,
+            Email = entity.Email,
+        };
+    }
+
+    public static UserDto ToUserDto(this UserEntity entity)
     {
         return new UserDto
         {
