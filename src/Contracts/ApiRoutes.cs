@@ -9,7 +9,7 @@ public class ApiRoutes
 
     public static class Account
     {
-        public const string Login = BASE + "/account/login";
-        public const string Signup = BASE + "/account/signup";
+        public const string Login = BASE + "/accounts/login";
+        public const string Signup = BASE + "/accounts/signup";
     }
 }

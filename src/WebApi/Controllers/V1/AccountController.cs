@@ -43,7 +43,7 @@ public class AccountController(IAccontManagement accontManagement) : ControllerB
     /// Signs up user and returns user information, otherwise error is returned.
     /// </summary>
     /// <remarks>
-    /// If a user with the same username already exists or an error occurs,
+    /// If a user with the same email already exists or an error occurs,
     /// a <see cref="FailureResponse"/> with an error message is returned.
     /// </remarks>
     /// <response code="200">Returns user information.</response>
