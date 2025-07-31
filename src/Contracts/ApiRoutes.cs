@@ -11,5 +11,7 @@ public class ApiRoutes
     {
         public const string Login = BASE + "/accounts/login";
         public const string Signup = BASE + "/accounts/signup";
+        public const string GetAccount = BASE + "/accounts/{accountId}";
+        public const string GetAccounts = BASE + "/accounts";
     }
 }

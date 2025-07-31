@@ -53,6 +53,29 @@ public class AccountManagement(UserManager<UserEntity> userManager, TokenProvide
         return createResult.Succeeded ? await GenerateAuthDtoForUserAsync(user) : FailureDto.BadRequest(createResult.Errors.Select(e => e.Description));
     }
 
+    public async Task<Result<UserDto, FailureDto>> GetAccountByIdAsync(Guid id)
+    {
+        var user = await userManager.Users
+            .Include(u => u.Balance)
+            .FirstOrDefaultAsync(u => u.Id == id);
+
+        if (user is null)
+        {
+            return FailureDto.NotFound("User not found");
+        }
+
+        return user.ToUserDto();
+    }
+
+    public async Task<Result<List<UserAccountDto>, FailureDto>> GetAllAccountsAsync()
+    {
+        var users = await userManager.Users
+            .Include(u => u.Balance)
+            .ToListAsync();
+
+        return users.Select(u => u.ToUserAccountDto()).ToList();
+    }
+
     private async Task<AuthSuccessDto> GenerateAuthDtoForUserAsync(UserEntity user)
     {
         IList<string> roles = await userManager.GetRolesAsync(user);
@@ -62,6 +85,6 @@ public class AccountManagement(UserManager<UserEntity> userManager, TokenProvide
     private static AuthSuccessDto CreateAuthDto(UserEntity user, string token) => new()
     {
         Token = token,
-        User = user.ToDto(),
+        User = user.ToUserDto(),
     };
 }

@@ -65,4 +65,42 @@ public class AccountController(IAccontManagement accontManagement) : ControllerB
             failure => failure.ToActionResult()
         );
     }
+
+    /// <summary>
+    /// Returns user information, otherwise error is returned.
+    /// </summary>
+    /// <remarks>
+    /// If user is not found
+    /// a <see cref="FailureResponse"/> with an error message is returned.
+    /// </remarks>
+    /// <response code="200">Returns user information.</response>
+    /// <response code="404">Returns not found error.</response>
+    [HttpGet(ApiRoutes.Account.GetAccount)]
+    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(FailureResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAccount([FromRoute] Guid accountId)
+    {
+        var result = await accontManagement.GetAccountByIdAsync(accountId);
+
+        return result.Match(
+            userDto => Ok(userDto.ToResponse()),
+            failure => failure.ToActionResult()
+        );
+    }
+
+    /// <summary>
+    /// Returns accounts
+    /// </summary>
+    /// <response code="200">Returns accounts.</response>
+    [HttpGet(ApiRoutes.Account.GetAccounts)]
+    [ProducesResponseType(typeof(List<UserAccountResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAccounts()
+    {
+        var result = await accontManagement.GetAllAccountsAsync();
+
+        return result.Match(
+            userDto => Ok(userDto.Select(u => u.ToResponse())),
+            failure => failure.ToActionResult()
+        );
+    }
 }
