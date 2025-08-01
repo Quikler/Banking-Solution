@@ -35,6 +35,7 @@ public class AccountController(IAccontManagement accontManagement) : ControllerB
         return result.Match(
             authSuccessDto =>
             {
+                HttpContext.SetHttpOnlyRefreshToken(authSuccessDto.RefreshToken);
                 return Ok(authSuccessDto.ToResponse());
             },
             failure => failure.ToActionResult()
@@ -62,6 +63,7 @@ public class AccountController(IAccontManagement accontManagement) : ControllerB
         return result.Match(
             authSuccessDto =>
             {
+                HttpContext.SetHttpOnlyRefreshToken(authSuccessDto.RefreshToken);
                 return Ok(authSuccessDto.ToResponse());
             },
             failure => failure.ToActionResult()
@@ -135,4 +137,37 @@ public class AccountController(IAccontManagement accontManagement) : ControllerB
             failure => failure.ToActionResult()
         );
     }
+
+    /// <summary>
+    /// Refreshes the JWT authentication token using the refresh token cookie.
+    /// </summary>
+    /// <remarks>
+    /// The refresh token is expected to be stored in an HTTP-only cookie named "refreshToken".
+    /// If the refresh token is missing or invalid, an Unauthorized response is returned.
+    /// On success, a new refresh token cookie is set and the updated authentication info is returned.
+    /// </remarks>
+    /// <response code="200">Returns the refreshed authentication information.</response>
+    /// <response code="401">Refresh token missing or invalid.</response>
+    [HttpPost(ApiRoutes.Account.Refresh)]
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(FailureResponse), StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Refresh()
+    {
+        if (!HttpContext.Request.Cookies.TryGetValue("refreshToken", out var refreshToken))
+        {
+            return Unauthorized();
+        }
+
+        var result = await accontManagement.RefreshTokenAsync(refreshToken);
+
+        return result.Match(
+            authSuccessDto =>
+            {
+                HttpContext.SetHttpOnlyRefreshToken(authSuccessDto.RefreshToken);
+                return Ok(authSuccessDto.ToResponse());
+            },
+            failure => failure.ToActionResult()
+        );
+    }
+
 }

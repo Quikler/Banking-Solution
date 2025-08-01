@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Security.Cryptography;
 using Common.Configurations;
 using DAL.Entities;
 using Microsoft.Extensions.Options;
@@ -40,4 +41,6 @@ public class TokenProvider(IOptions<JwtConfiguration> jwtConfiguration)
 
         return new JsonWebTokenHandler().CreateToken(tokenDescriptor);
     }
+
+    public static string GenerateRefreshToken() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
 }

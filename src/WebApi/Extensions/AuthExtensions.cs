@@ -27,4 +27,15 @@ public static class AuthExtensions
         userId = res.Value;
         return true;
     }
+
+    public static void SetHttpOnlyRefreshToken(this HttpContext httpContext, string value)
+    {
+        httpContext.Response.Cookies.Append("refreshToken", value, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.None,
+            Expires = DateTime.UtcNow.Add(TimeSpan.FromDays(180)),
+        });
+    }
 }

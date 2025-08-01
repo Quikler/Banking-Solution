@@ -1,15 +1,20 @@
 ﻿using BAL.Providers;
 using Common;
+using Common.Configurations;
 using Common.DTOs;
+using DAL;
 using DAL.Entities;
 using Mappers.Mapping;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace BAL.Services.Account;
 
-public class AccountManagement(UserManager<UserEntity> userManager, TokenProvider tokenProvider) : IAccontManagement
+public class AccountManagement(UserManager<UserEntity> userManager, TokenProvider tokenProvider, AppDbContext dbContext, IOptions<JwtConfiguration> jwtConfigurationOptions) : IAccontManagement
 {
+    private readonly JwtConfiguration _jwtConfiguration = jwtConfigurationOptions.Value;
+
     public async Task<Result<AuthSuccessDto, FailureDto>> LoginAsync(string email, string password)
     {
         var user = await userManager.Users
@@ -22,7 +27,7 @@ public class AccountManagement(UserManager<UserEntity> userManager, TokenProvide
         }
 
         var isCorrectPassword = await userManager.CheckPasswordAsync(user, password);
-        return isCorrectPassword ? await GenerateAuthDtoForUserAsync(user) : FailureDto.Unauthorized("Invalid email or password");
+        return isCorrectPassword ? await GenerateAuthSuccessDtoForUserAsync(user) : FailureDto.Unauthorized("Invalid email or password");
     }
 
     public async Task<Result<AuthSuccessDto, FailureDto>> SignupAsync(string email, string password)
@@ -50,7 +55,31 @@ public class AccountManagement(UserManager<UserEntity> userManager, TokenProvide
         user.Balance = balance;
 
         var createResult = await userManager.CreateAsync(user, password);
-        return createResult.Succeeded ? await GenerateAuthDtoForUserAsync(user) : FailureDto.BadRequest(createResult.Errors.Select(e => e.Description));
+        return createResult.Succeeded ? await GenerateAuthSuccessDtoForUserAsync(user) : FailureDto.BadRequest(createResult.Errors.Select(e => e.Description));
+    }
+
+    public async Task<Result<AuthSuccessDto, FailureDto>> RefreshTokenAsync(string refreshToken)
+    {
+        var storedRefreshToken = await dbContext.RefreshTokens
+            .Include(r => r.User)
+                .ThenInclude(u => u.Balance)
+            .FirstOrDefaultAsync(r => r.Token == refreshToken);
+
+        if (!IsRefreshTokenValid(storedRefreshToken))
+        {
+            return FailureDto.Unauthorized("Refresh token has expired.");
+        }
+
+        var newRefreshToken = TokenProvider.GenerateRefreshToken();
+        storedRefreshToken!.Token = newRefreshToken;
+        storedRefreshToken.ExpiryDate = DateTime.UtcNow.Add(_jwtConfiguration.RefreshTokenLifetime);
+
+        await dbContext.SaveChangesAsync();
+
+        var roles = await userManager.GetRolesAsync(storedRefreshToken.User);
+        var token = tokenProvider.CreateToken(storedRefreshToken.User, roles);
+
+        return CreateAuthSuccessDto(storedRefreshToken.User, newRefreshToken, token);
     }
 
     public async Task<Result<UserDto, FailureDto>> GetAccountByIdAsync(Guid id)
@@ -76,15 +105,32 @@ public class AccountManagement(UserManager<UserEntity> userManager, TokenProvide
         return users.Select(u => u.ToUserAccountDto()).ToList();
     }
 
-    private async Task<AuthSuccessDto> GenerateAuthDtoForUserAsync(UserEntity user)
+    private async Task<AuthSuccessDto> GenerateAuthSuccessDtoForUserAsync(UserEntity user)
     {
-        IList<string> roles = await userManager.GetRolesAsync(user);
-        return CreateAuthDto(user, tokenProvider.CreateToken(user, roles));
+        var roles = await userManager.GetRolesAsync(user);
+
+        var refreshToken = new RefreshTokenEntity
+        {
+            UserId = user.Id,
+            Token = TokenProvider.GenerateRefreshToken(),
+            ExpiryDate = DateTime.UtcNow.Add(_jwtConfiguration.RefreshTokenLifetime),
+        };
+
+        await dbContext.RefreshTokens.AddAsync(refreshToken);
+        await dbContext.SaveChangesAsync();
+
+        return CreateAuthSuccessDto(user, refreshToken.Token, tokenProvider.CreateToken(user, roles));
     }
 
-    private static AuthSuccessDto CreateAuthDto(UserEntity user, string token) => new()
+    private static AuthSuccessDto CreateAuthSuccessDto(UserEntity user, string refreshToken, string token) => new()
     {
+        RefreshToken = refreshToken,
         Token = token,
         User = user.ToUserDto(),
     };
+
+    private static bool IsRefreshTokenValid(RefreshTokenEntity? refreshTokenEntity)
+    {
+        return refreshTokenEntity is not null && refreshTokenEntity.ExpiryDate >= DateTime.UtcNow;
+    }
 }
