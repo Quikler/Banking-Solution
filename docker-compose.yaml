@@ -11,7 +11,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=5039
     depends_on:
-      - api.postgres
+      api.postgres:
+        condition: service_healthy
 
   api.postgres:
     image: postgres:16.9-alpine
@@ -22,3 +23,8 @@ services:
       POSTGRES_USER: "root"
       POSTGRES_PASSWORD: "root"
       POSTGRES_DB: "banking_solution"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d banking_solution"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
