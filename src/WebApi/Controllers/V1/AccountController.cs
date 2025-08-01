@@ -13,6 +13,7 @@ namespace WebApi.Controllers.V1;
 /// <summary>
 /// Provides API endpoints for managing user authentication, identification and authorization.
 /// </summary>
+[ApiController]
 public class AccountController(IAccontManagement accontManagement) : ControllerBase
 {
     /// <summary>

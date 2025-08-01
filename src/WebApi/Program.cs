@@ -1,10 +1,16 @@
 using BAL.Providers;
 using BAL.Services.Account;
 using Common.Configurations;
+using Contracts.V1.Responses;
+using Contracts.V1.Validators;
 using DAL;
 using DAL.Entities;
+using DAL.Seed.User;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -16,6 +22,24 @@ builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddControllers();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+            .Where(ms => ms.Value is not null && ms.Value.Errors.Count > 0)
+            .SelectMany(kvp => kvp.Value?.Errors?.Select(e => e.ErrorMessage) ?? [])
+            .ToList();
+
+        var failureResponse = new FailureResponse { Errors = errors };
+        return new BadRequestObjectResult(failureResponse);
+    };
+});
+
+builder.Services.AddValidatorsFromAssemblyContaining<DepositRequestValidator>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is missing.");

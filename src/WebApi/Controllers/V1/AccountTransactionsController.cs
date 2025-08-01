@@ -11,6 +11,7 @@ namespace WebApi.Controllers.V1;
 /// <summary>
 /// Provides API endpoints for deposit, withdrawal, and transfer operations.
 /// </summary>
+[ApiController]
 [Authorize]
 public class AccountTransactionsController(IAccountTransactionService accountTransactionService) : AuthorizeController
 {
