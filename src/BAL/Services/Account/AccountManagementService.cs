@@ -72,7 +72,7 @@ public class AccountManagementService(UserManager<UserEntity> userManager, Token
             return FailureDto.Unauthorized("Refresh token has expired.");
         }
 
-        var newRefreshToken = TokenProvider.GenerateRefreshToken();
+        var newRefreshToken = tokenProvider.GenerateRefreshToken();
         storedRefreshToken!.Token = newRefreshToken;
         storedRefreshToken.ExpiryDate = DateTime.UtcNow.Add(_jwtConfiguration.RefreshTokenLifetime);
 
@@ -114,7 +114,7 @@ public class AccountManagementService(UserManager<UserEntity> userManager, Token
         var refreshToken = new RefreshTokenEntity
         {
             UserId = user.Id,
-            Token = TokenProvider.GenerateRefreshToken(),
+            Token = tokenProvider.GenerateRefreshToken(),
             ExpiryDate = DateTime.UtcNow.Add(_jwtConfiguration.RefreshTokenLifetime),
         };
 

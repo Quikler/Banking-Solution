@@ -42,5 +42,5 @@ public class TokenProvider(IOptions<JwtConfiguration> jwtConfiguration)
         return new JsonWebTokenHandler().CreateToken(tokenDescriptor);
     }
 
-    public static string GenerateRefreshToken() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+    public string GenerateRefreshToken() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
 }
