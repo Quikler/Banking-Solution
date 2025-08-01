@@ -7,6 +7,13 @@ public class ApiRoutes
 
     public const string BASE = $"{ROOT}/{VERSION}";
 
+    public static class AccountTransaction
+    {
+        public const string Deposit = "/transactions/deposit";
+        public const string Withdraw = "/transactions/withdraw";
+        public const string Transfer = "/transactions/transfer";
+    }
+
     public static class Account
     {
         public const string Login = BASE + "/accounts/login";
