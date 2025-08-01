@@ -173,6 +173,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint(swaggerConfig.UIEndpoint, swaggerConfig.Description);
+        options.InjectJavascript("/swagger/custom-auth.js");
     });
 }
 
