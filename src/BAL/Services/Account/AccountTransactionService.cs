@@ -13,17 +13,17 @@ public class AccountTransactionService(AppDbContext context) : IAccountTransacti
         var balance = await GetBalanceAsync(userId);
         if (balance is null)
         {
-            return FailureDto.NotFound("User's balance not found");
+            return FailureDto.NotFound("Balance for user not found");
         }
 
         if (amount <= 0)
         {
-            return FailureDto.BadRequest("Amount must be positive");
+            return FailureDto.BadRequest("Amount must be greater than zero");
         }
         balance.Balance += amount;
 
         int count = await context.SaveChangesAsync();
-        return count > 0 ? true : FailureDto.BadRequest("Something went wrong during transfer");
+        return count > 0 ? true : FailureDto.BadRequest("Failed to complete the deposit");
     }
 
     public async Task<Result<bool, FailureDto>> WithdrawAsync(Guid userId, decimal amount)
@@ -31,53 +31,53 @@ public class AccountTransactionService(AppDbContext context) : IAccountTransacti
         var balance = await GetBalanceAsync(userId);
         if (balance is null)
         {
-            return FailureDto.NotFound("User's balance not found");
+            return FailureDto.NotFound("Balance for user not found");
         }
 
         if (amount <= 0)
         {
-            return FailureDto.BadRequest("Amount must be positive");
+            return FailureDto.BadRequest("Amount must be greater than zero");
         }
 
         if (balance.Balance < amount)
         {
-            return FailureDto.BadRequest("Insufficient funds");
+            return FailureDto.BadRequest("Not enough funds");
         }
         balance.Balance -= amount;
 
         int count = await context.SaveChangesAsync();
-        return count > 0 ? true : FailureDto.BadRequest("Something went wrong during transfer");
+        return count > 0 ? true : FailureDto.BadRequest("Failed to complete the withdrawal");
     }
 
     public async Task<Result<bool, FailureDto>> TransferAsync(Guid fromUserId, Guid toUserId, decimal amount)
     {
         if (fromUserId == toUserId)
         {
-            return FailureDto.BadRequest("Cannot transfer to the same user");
+            return FailureDto.BadRequest("Cannot transfer funds to the same user");
         }
 
         var fromBalance = await GetBalanceAsync(fromUserId);
         if (fromBalance is null)
         {
-            return FailureDto.NotFound("User's balance which transfers not found");
+            return FailureDto.NotFound("Balance for sender user not found");
         }
 
         var toBalance = await GetBalanceAsync(toUserId);
         if (toBalance is null)
         {
-            return FailureDto.NotFound("User's balance which accepts not found");
+            return FailureDto.NotFound("Balance for recipient user not found");
         }
 
         if (fromBalance.Balance < amount)
         {
-            return FailureDto.BadRequest("Insufficient funds for transfer");
+            return FailureDto.BadRequest("Not enough funds for transfer");
         }
 
         fromBalance.Balance -= amount;
         toBalance.Balance += amount;
 
         int count = await context.SaveChangesAsync();
-        return count > 0 ? true : FailureDto.BadRequest("Something went wrong during transfer");
+        return count > 0 ? true : FailureDto.BadRequest("Failed to complete the transfer");
     }
 
     private async Task<BalanceEntity?> GetBalanceAsync(Guid userId)
