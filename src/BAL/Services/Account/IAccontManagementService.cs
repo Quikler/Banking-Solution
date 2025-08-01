@@ -5,8 +5,8 @@ namespace BAL.Services.Account;
 
 public interface IAccontManagementService
 {
-    Task<Result<AuthSuccessDto, FailureDto>> SignupAsync(string email, string password);
-    Task<Result<AuthSuccessDto, FailureDto>> LoginAsync(string email, string password);
+    Task<Result<AuthSuccessDto, FailureDto>> SignupAsync(SignupUserDto signupUserDto);
+    Task<Result<AuthSuccessDto, FailureDto>> LoginAsync(LoginUserDto loginUserDto);
     Task<Result<AuthSuccessDto, FailureDto>> RefreshTokenAsync(string refreshToken);
     Task<Result<UserDto, FailureDto>> GetAccountByIdAsync(Guid id);
     Task<Result<List<UserAccountDto>, FailureDto>> GetAllAccountsAsync();

@@ -28,9 +28,9 @@ public class AccountsController(IAccontManagementService accontManagement) : Con
     [HttpPost(ApiRoutes.Account.Login)]
     [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(FailureResponse), StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+    public async Task<IActionResult> Login([FromBody] LoginUserRequest loginRequest)
     {
-        var result = await accontManagement.LoginAsync(loginRequest.Email, loginRequest.Password);
+        var result = await accontManagement.LoginAsync(loginRequest.ToDto());
 
         return result.Match(
             authSuccessDto =>
@@ -56,9 +56,9 @@ public class AccountsController(IAccontManagementService accontManagement) : Con
     [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(FailureResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(FailureResponse), StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> Signup([FromBody] SignupRequest signupRequest)
+    public async Task<IActionResult> Signup([FromBody] SignupUserRequest signupRequest)
     {
-        var result = await accontManagement.SignupAsync(signupRequest.Email, signupRequest.Password);
+        var result = await accontManagement.SignupAsync(signupRequest.ToDto());
 
         return result.Match(
             authSuccessDto =>

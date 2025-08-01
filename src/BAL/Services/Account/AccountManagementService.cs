@@ -15,23 +15,25 @@ public class AccountManagementService(UserManager<UserEntity> userManager, Token
 {
     private readonly JwtConfiguration _jwtConfiguration = jwtConfigurationOptions.Value;
 
-    public async Task<Result<AuthSuccessDto, FailureDto>> LoginAsync(string email, string password)
+    public async Task<Result<AuthSuccessDto, FailureDto>> LoginAsync(LoginUserDto loginUserDto)
     {
         var user = await userManager.Users
             .Include(u => u.Balance) // Include to retrieve Balance (maybe better add Lazy loading later)
-            .FirstOrDefaultAsync(u => u.Email == email);
+            .FirstOrDefaultAsync(u => u.Email == loginUserDto.Email);
 
         if (user is null)
         {
             return FailureDto.Unauthorized("Invalid email or password");
         }
 
-        var isCorrectPassword = await userManager.CheckPasswordAsync(user, password);
+        var isCorrectPassword = await userManager.CheckPasswordAsync(user, loginUserDto.Password);
         return isCorrectPassword ? await GenerateAuthSuccessDtoForUserAsync(user) : FailureDto.Unauthorized("Invalid email or password");
     }
 
-    public async Task<Result<AuthSuccessDto, FailureDto>> SignupAsync(string email, string password)
+    public async Task<Result<AuthSuccessDto, FailureDto>> SignupAsync(SignupUserDto signupUserDto)
     {
+        string email = signupUserDto.Email;
+
         if (await userManager.Users.AnyAsync(u => u.Email == email))
         {
             return FailureDto.Conflict("Email already exist");
@@ -54,7 +56,7 @@ public class AccountManagementService(UserManager<UserEntity> userManager, Token
 
         user.Balance = balance;
 
-        var createResult = await userManager.CreateAsync(user, password);
+        var createResult = await userManager.CreateAsync(user, signupUserDto.Password);
         return createResult.Succeeded ? await GenerateAuthSuccessDtoForUserAsync(user) : FailureDto.BadRequest(createResult.Errors.Select(e => e.Description));
     }
 

@@ -3,7 +3,7 @@
 using Contracts.V1.Requests.Account;
 using FluentValidation;
 
-public class SignupRequestValidator : AbstractValidator<SignupRequest>
+public class SignupRequestValidator : AbstractValidator<SignupUserRequest>
 {
     public SignupRequestValidator()
     {
