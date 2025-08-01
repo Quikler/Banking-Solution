@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 
 namespace BAL.Services.Account;
 
-public class AccountManagement(UserManager<UserEntity> userManager, TokenProvider tokenProvider, AppDbContext dbContext, IOptions<JwtConfiguration> jwtConfigurationOptions) : IAccontManagement
+public class AccountManagementService(UserManager<UserEntity> userManager, TokenProvider tokenProvider, AppDbContext dbContext, IOptions<JwtConfiguration> jwtConfigurationOptions) : IAccontManagementService
 {
     private readonly JwtConfiguration _jwtConfiguration = jwtConfigurationOptions.Value;
 

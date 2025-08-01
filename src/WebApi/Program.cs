@@ -95,7 +95,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddScoped<IAccontManagement, AccountManagement>();
+builder.Services.AddScoped<IAccontManagementService, AccountManagementService>();
 builder.Services.AddScoped<IAccountTransactionService, AccountTransactionService>();
 
 builder.Services.AddTransient<TokenProvider>();
