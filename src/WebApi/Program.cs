@@ -127,6 +127,8 @@ using (var scope = app.Services.CreateScope())
     {
         dbContext.Database.Migrate();
     }
+
+    await serviceProvider.SeedDefaultUsersAsync();
 }
 
 app.UseAuthentication();
