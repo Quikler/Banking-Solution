@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -64,6 +65,7 @@ builder.Services
     .AddDefaultTokenProviders();
 
 builder.Services
+    .Configure<SwaggerConfiguration>(builder.Configuration.GetSection(nameof(SwaggerConfiguration)))
     .Configure<JwtConfiguration>(builder.Configuration.GetSection(nameof(JwtConfiguration)));
 
 var jwtConfig = builder.Configuration.GetSection(nameof(JwtConfiguration)).Get<JwtConfiguration>()
@@ -161,10 +163,16 @@ app.UseAuthorization();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
+    var swaggerConfig = app.Services.GetRequiredService<IOptions<SwaggerConfiguration>>().Value;
+
+    app.UseSwagger(options =>
+    {
+        options.RouteTemplate = swaggerConfig.JsonRoute;
+    });
+
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Banking-Solution API v1");
+        options.SwaggerEndpoint(swaggerConfig.UIEndpoint, swaggerConfig.Description);
     });
 }
 
