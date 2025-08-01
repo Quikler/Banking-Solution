@@ -4,6 +4,7 @@ using Contracts.V1.Requests.Account;
 using Contracts.V1.Responses;
 using Contracts.V1.Responses.Account;
 using Mappers.Mapping;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Extensions;
 
@@ -75,12 +76,42 @@ public class AccountController(IAccontManagement accontManagement) : ControllerB
     /// </remarks>
     /// <response code="200">Returns user information.</response>
     /// <response code="404">Returns not found error.</response>
+    [Authorize]
     [HttpGet(ApiRoutes.Account.GetAccount)]
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(FailureResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAccount([FromRoute] Guid accountId)
     {
+        // Check if user who requests account info is the owner one
+        if (HttpContext.GetUserId() != accountId)
+        {
+            return Forbid();
+        }
+
         var result = await accontManagement.GetAccountByIdAsync(accountId);
+
+        return result.Match(
+            userDto => Ok(userDto.ToResponse()),
+            failure => failure.ToActionResult()
+        );
+    }
+
+    /// <summary>
+    /// Returns the currently authenticated user's account information.
+    /// </summary>
+    /// <remarks>
+    /// Uses JWT to identify the user.
+    /// If the user is not found, a <see cref="FailureResponse"/> is returned.
+    /// </remarks>
+    /// <response code="200">Returns user information.</response>
+    /// <response code="404">User not found.</response>
+    [Authorize]
+    [HttpGet(ApiRoutes.Account.Me)]
+    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(FailureResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetOwnAccount()
+    {
+        var result = await accontManagement.GetAccountByIdAsync(HttpContext.RequireUserId());
 
         return result.Match(
             userDto => Ok(userDto.ToResponse()),
