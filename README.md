@@ -61,9 +61,10 @@ cd Banking-Solution
     docker-compose up --build
     ```
 
-4. Once the containers are running, open one of the following URLs to access the Swagger API documentation:
+4. Once the containers are running, try to open one of the following URLs to access the Swagger API documentation:
 
-    - http://localhost:5039/swagger/index.html  
+    - http://localhost:5039/swagger/index.html
+    - http://0.0.0.0:5039/swagger/index.html
     - http://[::1]:5039/swagger/index.html
 
 5. You can log in using the test user credentials:
@@ -124,9 +125,8 @@ cd Banking-Solution
 
 8. Open Swagger UI to explore the API:
 
-    ```
-    http://localhost:5039/swagger/index.html
-    ```
+    - http://localhost:5039/swagger/index.html
+    - http://0.0.0.0:5039/swagger/index.html
 
 9. Use the test credentials or create your own user through the signup endpoint.
 

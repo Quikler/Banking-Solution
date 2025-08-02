@@ -23,7 +23,7 @@ if (builder.Environment.IsDocker())
     builder.Configuration.AddJsonFile("appsettings.Docker.json");
 }
 
-builder.WebHost.UseUrls("https://localhost:5039");
+builder.WebHost.UseUrls("http://0.0.0.0:5039");
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
