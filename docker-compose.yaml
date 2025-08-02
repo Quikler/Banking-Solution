@@ -18,7 +18,7 @@ services:
     image: postgres:16.9-alpine
     container_name: api.postgres
     ports:
-      - "5432:5432"
+      - "5433:5433"
     environment:
       POSTGRES_USER: "root"
       POSTGRES_PASSWORD: "root"
