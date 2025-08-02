@@ -8,7 +8,7 @@ services:
     ports:
       - "5039:5039"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_HTTP_PORTS=5039
     depends_on:
       api.postgres:

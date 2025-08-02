@@ -14,8 +14,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using WebApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+if (builder.Environment.IsDocker())
+{
+    builder.Configuration.AddJsonFile("appsettings.Docker.json");
+}
+
+builder.WebHost.UseUrls("https://localhost:5039");
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -161,7 +169,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsDocker())
 {
     var swaggerConfig = app.Services.GetRequiredService<IOptions<SwaggerConfiguration>>().Value;
 
