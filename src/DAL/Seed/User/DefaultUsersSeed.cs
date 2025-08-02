@@ -12,8 +12,8 @@ public static class UserSeed
 
         var defaultUsers = new[]
         {
-            new { Email = "test@test.com", Password = "Test@1234" },
-            new { Email = "test2@test.com", Password = "Test2@1234" }
+            new { Email = "test@test.com", Password = "test@test.com", },
+            new { Email = "test2@test.com", Password = "test2@test.com", },
         };
 
         foreach (var userInfo in defaultUsers)
