@@ -50,6 +50,9 @@ public class IntegrationTestWebApplicationFactory : WebApplicationFactory<Progra
         await _dbContainer.StartAsync();
         _dbConnection = new NpgsqlConnection(_dbContainer.GetConnectionString());
         HttpClient = CreateClient();
+
+        // Change default http://localhost to HTTPS version TO PREVENT REDIRECTION from HTTP to HTTPS
+        ClientOptions.BaseAddress = new Uri("https://localhost");
         await InitializeRespawnerAsync();
     }
 
