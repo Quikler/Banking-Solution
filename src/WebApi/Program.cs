@@ -180,3 +180,5 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.Run();
+
+public partial class Program;
