@@ -2,6 +2,21 @@
 
 A simple REST API for basic banking operations: creating accounts, deposits, withdrawals, and transfers.
 
+## Technology Stack and Design Choices
+
+- **C# with ASP.NET Core Web API:** Fast, cross-platform framework for building REST APIs.
+- **Entity Framework Core:** Simplifies database operations with PostgreSQL using ORM.
+- **PostgreSQL:** Reliable open-source relational database suited for transactional data.
+- **Testing tools:** xUnit, Shouldly, Moq, Faker, and AutoFixture ensure code quality with automated tests.
+- **Microsoft.Identity:** Used for secure handling of JWT authentication and authorization.
+
+### Design Choices
+
+- **Layered architecture:** Separates API, business logic, and data access for maintainability.
+- **JWT authentication with Refresh Tokens:** Secure, stateless authentication using access tokens with short lifespan and refresh tokens to obtain new access tokens without re-login.
+- **RESTful principles:** Clear, resource-based routes with proper HTTP methods.
+- **Docker:** Containerization for easy setup and deployment.
+
 ---
 
 ## Features
@@ -20,8 +35,9 @@ A simple REST API for basic banking operations: creating accounts, deposits, wit
 - **Language:** C#
 - **Framework:** ASP.NET Core Web API
 - **ORM:** Entity Framework Core
-- **Testing:** xUnit, Shouldly, Moq, Faker, AutoFixture
+- **Testing:** xUnit, Shouldly, Moq, Faker, AutoFixt.
 - **Database:** PostgreSQL
+- **Authentication:** JWT, Refresh token, Microsoft.Identity
 
 ---
 
