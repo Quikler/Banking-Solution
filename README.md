@@ -88,7 +88,7 @@ cd Banking-Solution
     cd Banking-Solution
     ```
 
-2. Run tests to ensure everything is working correctly:
+2. Run tests to ensure everything is working correctly (requires Docker for TestContrainers):
 
     ```bash
     dotnet test
