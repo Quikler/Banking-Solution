@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Bogus;
 using Contracts;
 using Contracts.V1.Requests.Account;
 using Contracts.V1.Responses.Account;
@@ -20,6 +21,12 @@ public static class BaseIntegrationTestExtensions
         };
 
         return await baseIntegrationTest.HttpClient.PostAsJsonAsync(ApiRoutes.Account.Signup, signupRequest);
+    }
+
+    public static async Task<AuthResponse> SignupRandomAsync(this BaseIntegrationTest baseIntegrationTest)
+    {
+        var fakeEmail = new Faker().Internet.Email();
+        return await baseIntegrationTest.SignupUserAsync(fakeEmail, Guid.NewGuid().ToString());
     }
 
     public static async Task<AuthResponse> SignupUserAsync(this BaseIntegrationTest baseIntegrationTest, string email, string password)
